@@ -1,0 +1,468 @@
+<link rel="stylesheet" type="text/css" href="{$wa_app_static_url}plugins/pdd/css/control.css">
+<link rel="stylesheet" type="text/css" href="{$wa_app_static_url}plugins/pdd/css/datatables.css">
+<link rel="stylesheet" type="text/css" href="{$wa_app_static_url}plugins/pdd/css/select2.css">
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/fsend.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/fsortable.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/gofileupload.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/bpopup.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/jquery.dataTables.reload.plugin.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/select2.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/select2_locale_ru.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+<style>
+    .photo-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .photo-item {
+        width: 150px;
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        cursor: grab;
+    }
+    .photo-item i {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+    }
+</style>
+<div class="sidebar pdd-sidebar" style="width: 200px;">
+    <div>
+		<h5 class="heading">Категории</h5>
+		<ul class="pdd-menu menu-v with-icons">
+            <li class="selected" data-block="catalogs"><a>Каталоги</a></li>
+            <li data-block="prices"><a>Прайс-листы</a></li>
+            <li data-block="certificates"><a>Сертификаты</a></li>
+		</ul>
+	</div>
+</div>
+<div class="pdd-popup-cnt content left250px">
+    <div class="pdd-set-blocks mt15 double-padded">
+
+        <div class="pdd-set-block" data-block="catalogs">
+
+            <form class="pdd_file_upload_form" action="?plugin=pdd&module=file&action=upload" method="POST" enctype="multipart/form-data">
+                <div class="l-dropbox">
+                    <a class="l-fileinput-button">
+                        <i class="icon16 upload"></i> Перетащите файл 
+                        <input type="file" name="files[]" multiple="">
+                        <input type="hidden" name="product_id" value="{$product_id|escape}">
+                        <input type="hidden" name="type" value="catalogs">
+                    </a>
+                    <span class="gray">или просто перетащите их сюда, чтобы начать загрузку</span>
+                </div>
+                {$wa->csrf()}
+                <div class="dialog width500px height400px" id="l_upload_notification">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-window">
+                        <div class="l-upload-list"></div>
+                        <div class="dialog-buttons">
+                            <div class="block float-right" style="padding-top: 22px;">
+                                <a href="#" class="l-cancel hint cancel">Отмена</a>
+                            </div>
+                            <div style="display:none; padding-top: 25px;" class="l-upload-errors block errormsg">
+                                Некоторые файлы загружены с ошибками
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="pdd-dt-wrap">
+                <table class="pdd-catalogs-table zebra mt15" data-Url="?plugin=pdd&module=file&action=listCatalogs">
+                    <thead>
+                        <tr>
+                            <th>Имя файла</th>
+                            <th width="1"></th>
+                            <th width="1"></th>
+                            <th width="1"></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="pdd-set-block" data-block="prices" style="display: none;">
+
+            <form class="pdd_file_upload_form" action="?plugin=pdd&module=file&action=upload" method="POST" enctype="multipart/form-data">
+                <div class="l-dropbox">
+                    <a class="l-fileinput-button">
+                        <i class="icon16 upload"></i> Перетащите файл 
+                        <input type="file" name="files[]" multiple="">
+                        <input type="hidden" name="product_id" value="{$product_id|escape}">
+                        <input type="hidden" name="type" value="prices">
+                    </a>
+                    <span class="gray">или просто перетащите их сюда, чтобы начать загрузку</span>
+                </div>
+                {$wa->csrf()}
+                <div class="dialog width500px height400px" id="l_upload_notification">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-window">
+                        <div class="l-upload-list"></div>
+                        <div class="dialog-buttons">
+                            <div class="block float-right" style="padding-top: 22px;">
+                                <a href="#" class="l-cancel hint cancel">Отмена</a>
+                            </div>
+                            <div style="display:none; padding-top: 25px;" class="l-upload-errors block errormsg">
+                                Некоторые файлы загружены с ошибками
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="pdd-dt-wrap">
+                <table class="pdd-prices-table zebra mt15" data-Url="?plugin=pdd&module=file&action=listPrices">
+                    <thead>
+                        <tr>
+                            <th>Имя файла</th>
+                            <th width="1"></th>
+                            <th width="1"></th>
+                            <th width="1"></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="pdd-set-block" data-block="certificates" style="display: none;">
+                <form class="pdd_file_upload_form" action="?plugin=pdd&module=certificate&action=upload" method="POST" enctype="multipart/form-data">
+                <div class="l-dropbox">
+                    <a class="l-fileinput-button">
+                        <i class="icon16 upload"></i> Перетащите фото
+                        <input type="file" name="files[]" multiple="">
+                        <input type="hidden" name="product_id" value="{$product_id|escape}">
+                    </a>
+                    <span class="gray">или просто перетащите их сюда, чтобы начать загрузку</span>
+                </div>
+                {$wa->csrf()}
+                <div class="dialog width500px height400px" id="l_upload_notification">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-window">
+                        <div class="l-upload-list"></div>
+                        <div class="dialog-buttons">
+                            <div class="block float-right" style="padding-top: 22px;">
+                                <a href="#" class="l-cancel hint cancel">Отмена</a>
+                            </div>
+                            <div style="display:none; padding-top: 25px;" class="l-upload-errors block errormsg">
+                                Некоторые файлы загружены с ошибками
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div id="photo-container" class="photo-container"></div>
+        </div>
+        
+         
+
+    </div>
+</div>
+
+
+
+{literal}
+<script type="text/javascript">
+    (function($) {
+        $.pddProduct = {
+            id: null,
+            menu: null,
+            set_id: null,
+            product_id: null,
+            blocks: null,
+            uploadForm: null,
+            popup: null,
+
+           
+            catalogsTable: null,
+			catalogsContainer: null,
+			catalogsTableUrl: null,
+
+            pricesTable: null,
+            pricesTableContainer: null,
+            pricesTableUrl: null,
+
+            
+            iconCatalogsEditClass: null,
+            iconCatalogsDeleteClass: null,
+
+            iconPricesEditClass: null,
+            iconPricesDeleteClass: null,
+
+            iconCertificateEditClass: null,
+            iconCertificateDeleteClass: null,
+
+
+           
+            init: function() {
+                let self = this;
+                this.product_id = $("input[name='product_id']").val();
+
+                this.menu = $('.pdd-menu');
+                this.blocks = $('.pdd-set-block');
+                this.uploadForm = $('.pdd_file_upload_form');
+
+                // this.popup = $('.pdd-popup');
+                
+                this.catalogsTableContainer = $('.pdd-catalogs-table');
+				this.catalogsTableUrl = this.catalogsTableContainer.attr('data-url');
+
+                this.pricesTableContainer = $('.pdd-prices-table');
+				this.pricesTableUrl = this.pricesTableContainer.attr('data-url');
+
+                this.iconCatalogsEditClass = '.pdd-catalogs-edit';
+				this.iconCatalogsDeleteClass = '.pdd-catalogs-delete';
+
+                this.iconPricesEditClass = '.pdd-prices-edit';
+				this.iconPricesDeleteClass = '.pdd-prices-delete';
+
+                this.iconCertificateEditClass = '.pdd-certificate-edit';
+				this.iconCertificateDeleteClass = '.pdd-certificate-delete';
+
+                this.initMenu();
+                this.initForm();
+                this.initCatalogsTable();
+                this.initPricesTable();
+
+                this.initPhotoContainer();
+                this.initDeleteBtn();
+                this.initEditBtn();
+            },
+
+			initForm: function() {
+                var self = this;
+
+                this.uploadForm.each((i, elem) => {
+                    $(elem).goFileUpload(function(jData) {
+                        self.catalogsTable.fnReloadAjax();
+                        self.pricesTable.fnReloadAjax();
+                        self.initPhotoContainer();
+				    });
+                });
+            },
+           
+           initMenu: function() {
+            
+                this.menu.on('click', (e) => {
+                    if($(e.target.parentNode).hasClass('selected')) {
+                        return;
+                    }
+                    else {
+                        
+                        this.menu.children().each(function(item){
+                            
+                            $(this).removeClass('selected');
+                        });
+                        $(e.target.parentNode).addClass('selected');
+
+                        this.blocks.each(function(item){
+                            $(this).hide();
+                        });
+
+                        this.blocks.each(function(item){
+                            if($(this).attr('data-block') == $(e.target.parentNode).attr('data-block')){
+                                $(this).show();
+                            }
+                        });
+                    }
+                    
+                })
+            },
+
+            initDeleteBtn: function() {
+                var self = this;
+                $(document).on('click', '.pdd-certificate-delete', function() {
+                   
+                    var file_name =  prompt('Для удаления введите название файла без расширения', '');
+                
+                    if (file_name === $(this).attr('data-name')) {
+                        $.post('?plugin=pdd&module=backend&action=Remove', { file_id: $(this).attr('data-id'), type:'certificates' }, function() {
+                            self.initPhotoContainer();  
+                        });
+                    }
+                });
+            },
+
+            initEditBtn: function() {
+                var self = this;
+                $(document).on('click', '.pdd-certificate-edit', function() {
+                   
+                    var new_name =  prompt('Введите новое название файл без расширения', `${$(this).attr('data-name')}`);
+                    if (new_name == '' || new_name == false || new_name == null) { return; }
+
+                    $.post('?plugin=pdd&module=backend&action=Edit', {file_id: $(this).attr('data-id') , new_name: new_name, type:'certificates'}, function(jData) {
+                        console.log(jData)
+                        self.initPhotoContainer();  
+                    });
+                  
+                });
+            },
+
+            initCatalogsTable: function() {
+                
+				var self = this;
+                
+                this.catalogsTable = this.catalogsTableContainer.dataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": self.catalogsTableUrl+'&hash='+encodeURIComponent(self.product_id),
+                    "order": [[ 1, "asc" ]],
+                    columnDefs: [{orderable: false}, {targets: [0]}],
+                    "language":{
+                        "sLengthMenu": "Показывать _MENU_ записей",
+                        "sZeroRecords": "Нет записей, удовлетворяющих условиям поиска",
+                        "sInfo": "Отображаются записи с _START_ до _END_ из _TOTAL_",
+                        "sInfoEmpty": "Отображаются записи с 0 до 0 из 0",
+                        "sInfoFiltered": "(отфильтровано из _MAX_ записей)",
+                        "sSearch": "Поиск:",
+                        "processing": "Обработка...",
+                        "oPaginate": { "sNext": ">>", "sPrevious": "<<" }
+                    },
+                    "paging": false,
+                    "info": false,
+                    "searching": false,
+                    "lengthChange": false,
+                });
+
+                this.catalogsTable.on('draw.dt', function () {
+                    var deleteIcon = $(self.iconCatalogsDeleteClass);
+                    deleteIcon.on('click', function() {
+                        var file_name =  prompt('Для удаления введите названия файла без расширения', '');
+
+                        if(file_name == $(this).attr('data-name')){
+                            $.post('?plugin=pdd&module=backend&action=Remove', { file_id: $(this).attr('data-id'), type:'catalogs'}, function(jData) {
+                                
+                                self.catalogsTable.fnReloadAjax();
+                            });
+                            
+                        }
+                    });
+
+                    var editIcon = $(self.iconCatalogsEditClass);
+                    editIcon.on('click', function() {
+                        var new_name =  prompt('Введите новое название файл без расширения', '');
+                        $.post('?plugin=pdd&module=backend&action=Edit', { file_id: $(this).attr('data-id'), new_name: new_name, type:'catalogs'}, function(jData) {
+                            
+                            self.catalogsTable.fnReloadAjax();
+                        });
+                        
+                    });
+                });
+                
+			},
+
+            initPricesTable: function() {
+                
+				var self = this;
+                
+                this.pricesTable = this.pricesTableContainer.dataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": self.pricesTableUrl+'&hash='+encodeURIComponent(self.product_id),
+                    "order": [[ 1, "asc" ]],
+                    columnDefs: [{orderable: false}, {targets: [0]}],
+                    "language":{
+                        "sLengthMenu": "Показывать _MENU_ записей",
+                        "sZeroRecords": "Нет записей, удовлетворяющих условиям поиска",
+                        "sInfo": "Отображаются записи с _START_ до _END_ из _TOTAL_",
+                        "sInfoEmpty": "Отображаются записи с 0 до 0 из 0",
+                        "sInfoFiltered": "(отфильтровано из _MAX_ записей)",
+                        "sSearch": "Поиск:",
+                        "processing": "Обработка...",
+                        "oPaginate": { "sNext": ">>", "sPrevious": "<<" }
+                    },
+                    "paging": false,
+                    "info": false,
+                    "searching": false,
+                    "lengthChange": false,
+                });
+
+                this.pricesTable.on('draw.dt', function () {
+                    var deletePricesIcon = $(self.iconPricesDeleteClass);
+                    deletePricesIcon.on('click', function() {
+                        var file_name =  prompt('Для удаления введите названия файла без расширения', '');
+                        if(file_name == $(this).attr('data-name'))
+                        {
+                            $.post('?plugin=pdd&module=backend&action=Remove', { file_id: $(this).attr('data-id'), type:'prices'},function(jData) {
+                                console.log(jData)
+                                self.pricesTable.fnReloadAjax();
+                            });
+                        }
+                    });
+
+                    var editPricesIcon = $(self.iconPricesEditClass);
+                    editPricesIcon.on('click', function() {
+                        var new_name =  prompt('Введите новое название файл без расширения', '');
+                        $.post('?plugin=pdd&module=backend&action=Edit', { file_id: $(this).attr('data-id'), new_name: new_name, type:'prices'},function(jData) {
+                            console.log(jData)
+                            self.pricesTable.fnReloadAjax();
+                        });
+                           
+                    });
+                });
+                
+			},
+
+            
+            
+            initPhotoContainer() {
+                var self = this;
+                var photoContainer = $('#photo-container');
+                photoContainer.empty();
+                $.post('?plugin=pdd&module=Certificates&action=List'+'&hash='+encodeURIComponent(self.product_id), function(jData) {
+                    jData.data.forEach(function(file) {
+                        var photoItem = $(`
+                            <div>
+                                <div>${file.name}</div>
+                                
+                                <div class="mt15">
+                                    <div class="photo-item" style="background-image: url(${file.thumb_url});"></div>
+                                    <i class="icon16 edit pdd-certificate-edit" title="Редактировать" data-id="${file.id}" data-name="${file.name.replace(/\.[^/.]+$/, "")}"></i>
+                                    <i class="icon16 delete pdd-certificate-delete" title="Удалить" data-id="${file.id}" data-name="${file.name.replace(/\.[^/.]+$/, "")}"></i>
+                                    <a href="${file.download_url}">
+                                        <i class="icon16 download pdd-file-download" title="Скачать" data-id="${file.id}"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `);
+
+                        photoContainer.append(photoItem);
+                    });
+                });
+
+                photoContainer.sortable({
+                    update: function() {
+                        self.updateSort();
+                    }
+                }).disableSelection();
+
+                
+            },
+
+
+
+            updateSort: function() {
+                
+                console.log('asfd')
+               
+            }
+
+            
+        }
+    })(jQuery);
+    $(document).ready(function() {
+        $.pddProduct.init();
+    })
+
+</script>
+{/literal}
