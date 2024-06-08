@@ -11,5 +11,6 @@ return array
 						(
 							'backend_product' => 'backendProduct',
 							'frontend_product' => 'frontendProduct',
+							'backend_menu' => 'backendMenu',
 						),
 	);

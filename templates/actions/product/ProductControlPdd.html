@@ -9,30 +9,6 @@
 <script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/jquery.dataTables.reload.plugin.js"></script>
 <script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/select2.js"></script>
 <script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/select2_locale_ru.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-
-<style>
-    .photo-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .photo-item {
-        width: 150px;
-        height: 150px;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-        cursor: grab;
-    }
-    .photo-item i {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        cursor: pointer;
-    }
-</style>
 <div class="sidebar pdd-sidebar" style="width: 200px;">
     <div>
 		<h5 class="heading">Категории</h5>
@@ -79,7 +55,7 @@
                 <table class="pdd-catalogs-table zebra mt15" data-Url="?plugin=pdd&module=file&action=listCatalogs">
                     <thead>
                         <tr>
-                            <th>Имя файла</th>
+                            <th >Имя файла</th>
                             <th width="1"></th>
                             <th width="1"></th>
                             <th width="1"></th>
@@ -123,7 +99,7 @@
                 <table class="pdd-prices-table zebra mt15" data-Url="?plugin=pdd&module=file&action=listPrices">
                     <thead>
                         <tr>
-                            <th>Имя файла</th>
+                            <th >Имя файла</th>
                             <th width="1"></th>
                             <th width="1"></th>
                             <th width="1"></th>
@@ -212,7 +188,7 @@
                 this.blocks = $('.pdd-set-block');
                 this.uploadForm = $('.pdd_file_upload_form');
 
-                // this.popup = $('.pdd-popup');
+                this.popup = $('.pdd-popup');
                 
                 this.catalogsTableContainer = $('.pdd-catalogs-table');
 				this.catalogsTableUrl = this.catalogsTableContainer.attr('data-url');
@@ -282,29 +258,15 @@
             initDeleteBtn: function() {
                 var self = this;
                 $(document).on('click', '.pdd-certificate-delete', function() {
-                   
-                    var file_name =  prompt('Для удаления введите название файла без расширения', '');
-                
-                    if (file_name === $(this).attr('data-name')) {
-                        $.post('?plugin=pdd&module=backend&action=Remove', { file_id: $(this).attr('data-id'), type:'certificates' }, function() {
-                            self.initPhotoContainer();  
-                        });
-                    }
+                    self.deployPopup('?plugin=pdd&module=dialog&action=delete', {file_id: $(this).attr('data-id'), type:'certificates'});
+                    
                 });
             },
 
             initEditBtn: function() {
                 var self = this;
                 $(document).on('click', '.pdd-certificate-edit', function() {
-                   
-                    var new_name =  prompt('Введите новое название файл без расширения', `${$(this).attr('data-name')}`);
-                    if (new_name == '' || new_name == false || new_name == null) { return; }
-
-                    $.post('?plugin=pdd&module=backend&action=Edit', {file_id: $(this).attr('data-id') , new_name: new_name, type:'certificates'}, function(jData) {
-                        console.log(jData)
-                        self.initPhotoContainer();  
-                    });
-                  
+                    self.deployPopup('?plugin=pdd&module=dialog&action=edit', {file_id: $(this).attr('data-id'), type:'certificates'});
                 });
             },
 
@@ -335,28 +297,17 @@
                 });
 
                 this.catalogsTable.on('draw.dt', function () {
+
                     var deleteIcon = $(self.iconCatalogsDeleteClass);
                     deleteIcon.on('click', function() {
-                        var file_name =  prompt('Для удаления введите названия файла без расширения', '');
-
-                        if(file_name == $(this).attr('data-name')){
-                            $.post('?plugin=pdd&module=backend&action=Remove', { file_id: $(this).attr('data-id'), type:'catalogs'}, function(jData) {
-                                
-                                self.catalogsTable.fnReloadAjax();
-                            });
-                            
-                        }
+                        self.deployPopup('?plugin=pdd&module=dialog&action=delete', {file_id: $(this).attr('data-id'), type:'catalogs'});
                     });
 
                     var editIcon = $(self.iconCatalogsEditClass);
                     editIcon.on('click', function() {
-                        var new_name =  prompt('Введите новое название файл без расширения', '');
-                        $.post('?plugin=pdd&module=backend&action=Edit', { file_id: $(this).attr('data-id'), new_name: new_name, type:'catalogs'}, function(jData) {
-                            
-                            self.catalogsTable.fnReloadAjax();
-                        });
-                        
+                        self.deployPopup('?plugin=pdd&module=dialog&action=edit', {file_id: $(this).attr('data-id'), type:'catalogs'});
                     });
+
                 });
                 
 			},
@@ -390,24 +341,12 @@
                 this.pricesTable.on('draw.dt', function () {
                     var deletePricesIcon = $(self.iconPricesDeleteClass);
                     deletePricesIcon.on('click', function() {
-                        var file_name =  prompt('Для удаления введите названия файла без расширения', '');
-                        if(file_name == $(this).attr('data-name'))
-                        {
-                            $.post('?plugin=pdd&module=backend&action=Remove', { file_id: $(this).attr('data-id'), type:'prices'},function(jData) {
-                                console.log(jData)
-                                self.pricesTable.fnReloadAjax();
-                            });
-                        }
+                        self.deployPopup('?plugin=pdd&module=dialog&action=delete', {file_id: $(this).attr('data-id'), type:'prices'});
                     });
 
                     var editPricesIcon = $(self.iconPricesEditClass);
                     editPricesIcon.on('click', function() {
-                        var new_name =  prompt('Введите новое название файл без расширения', '');
-                        $.post('?plugin=pdd&module=backend&action=Edit', { file_id: $(this).attr('data-id'), new_name: new_name, type:'prices'},function(jData) {
-                            console.log(jData)
-                            self.pricesTable.fnReloadAjax();
-                        });
-                           
+                        self.deployPopup('?plugin=pdd&module=dialog&action=edit', {file_id: $(this).attr('data-id'), type:'prices'});
                     });
                 });
                 
@@ -422,9 +361,8 @@
                 $.post('?plugin=pdd&module=Certificates&action=List'+'&hash='+encodeURIComponent(self.product_id), function(jData) {
                     jData.data.forEach(function(file) {
                         var photoItem = $(`
-                            <div>
+                            <div id="${file.id}">
                                 <div>${file.name}</div>
-                                
                                 <div class="mt15">
                                     <div class="photo-item" style="background-image: url(${file.thumb_url});"></div>
                                     <i class="icon16 edit pdd-certificate-edit" title="Редактировать" data-id="${file.id}" data-name="${file.name.replace(/\.[^/.]+$/, "")}"></i>
@@ -449,14 +387,45 @@
                 
             },
 
-
-
             updateSort: function() {
+                const ids =`ids=${$('#photo-container').sortable("toArray").join(',')}`;
                 
-                console.log('asfd')
-               
-            }
+                $.ajax({
+                    method: 'post',
+                    url: '?plugin=pdd&module=certificate&action=sort',
+                    data: ids,
+                    success: function(jData) {
+                        console.log(jData)
+                    }
+                }, 'json')
+            },
 
+            hidePopup: function() {
+                this.popup.bPopup().close();
+            },
+
+            deployPopup: function(url, data) {
+                var self = this;
+                $.post(url, data, function(html) {
+                    self.popup.html(html).bPopup({
+                        speed: 300,
+                        transition: 'slideDown'
+                    });
+                });
+            },
+            
+            setActiveBlock: function(url) {
+                this.menu.find('li').removeClass('selected');
+                this.menu.find(`a[href='${url}']`).parent().addClass('selected');
+            },
+            
+            escapeHtml: function(string) {
+                return $("<div />").text(string).html();
+            },
+
+            isValidFilename: function(filename) {
+                return /^[^/?*.:;{}\\]+$/.test(filename);
+            },
             
         }
     })(jQuery);

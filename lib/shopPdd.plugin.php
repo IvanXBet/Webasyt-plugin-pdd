@@ -18,11 +18,18 @@ class shopPddPlugin  extends shopPlugin
 		
 		$pdd_core_li_class = 'no-tab';
 		if($plugin == 'pdd' && $module == 'backend' && $action == 'control') {$pdd_core_li_class = 'selected';}
-
 		$view->assign('pdd_core_li_class', $pdd_core_li_class);
 
 		$view->assign('id_poduct', $data['id']);
 		return array('edit_section_li' => $view->fetch(wa()->getAppPath(null, 'shop').'/plugins/pdd/templates/BackendMenuEditSectionLi.html'));
+	}
+
+	public function backendMenu()
+	{
+		$view = wa()->getView();
+		return array(
+			'aux_li' => $view->fetch(wa()->getAppPath(null, 'shop').'/plugins/pdd/templates/BackendMenuAuxLi.html'),
+		);
 	}
 	
 	static public function frontendProductCatalogs($product_id)
@@ -47,6 +54,7 @@ class shopPddPlugin  extends shopPlugin
 	{
 		$collection = new shopPddPluginCertificatesCollection();
 		$collection->addWhere('T.product_id = '.$product_id);
+		$collection->setOrderBy("T.sort ASC");
 		$certificates = $collection->getItems('T.*');
 		
 		$items = array();
@@ -59,6 +67,8 @@ class shopPddPlugin  extends shopPlugin
 
 		return $items;
 	}
+
+	
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Работа с файлами
@@ -185,9 +195,8 @@ class shopPddPlugin  extends shopPlugin
 							'original_filename' => basename($file->name),
 							'ext' => $file->extension,
 							'hash' => $hash,
+							'sort' => $file_model->getMaxSort($product_id)+1,
 						);
-
-						
 
 						if (!in_array($file->extension, $valid_extensions)) {
 							$result[] = array('result' => 0, 'massage' => 'Расширение файла не подходит для сертификата');
@@ -200,14 +209,9 @@ class shopPddPlugin  extends shopPlugin
 						$dirname = $path_info['dirname'];
 						waFiles::create($dirname);
 						$file->moveTo($dirname, $id.'.'.$file->extension);
-						
-						
 						$size = '0x400'; 
 						$max_size = '2000';
 						$thumb_url = shopPddPluginHelper::getThumbUrl($product_id, $id, $size, $file->extension);
-
-						
-						
 
 						$result[] = array(
                         'result' => 1,
@@ -236,7 +240,8 @@ class shopPddPlugin  extends shopPlugin
 	public function updateFile($file_id, $new_name, $type) 
 	{
 		$result = array();
-		switch($type) {
+		switch($type) 
+		{
 			case 'catalogs':
 				$model = new shopPddPluginCatalogsModel();
 				break;
@@ -267,10 +272,9 @@ class shopPddPlugin  extends shopPlugin
 
 	public function removeFile($file_id, $type)
 	{
-
 		$result = array();
-
-		switch($type) {
+		switch($type) 
+		{
 			case 'catalogs':
 				$model = new shopPddPluginCatalogsModel();
 				break;
@@ -311,5 +315,12 @@ class shopPddPlugin  extends shopPlugin
         }
 		
 		return $result;
+	}
+
+	public function sortCertificate($ids) 
+	{
+		if(!count($ids)) {return array('result' => 0, 'message' => 'Не заданн список для сортировки');}
+		$model = new shopPddPluginCertificatesModel();
+		return $model->sortSets($ids);
 	}
 }

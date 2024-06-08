@@ -3,15 +3,15 @@ class shopPddPluginBackendRemoveController extends waJsonController
 {
 	public function execute()
 	{
-		$file_id = waRequest::post('file_id', null, 'int');
+		$file = waRequest::post('file', null);
         $type = waRequest::post('type', '', 'string');
 
-		if (!$file_id) {
-            $this->response = array('result' => 0, 'message' => 'ID файла не указан');
+		if (!$file['id']) {
+            $this->response = array('result' => 0, 'message' => 'ID файла не указан', 'file' => $file['id']);
             return;
         }
 		
 		$pdd = waSystem::getInstance('shop')->getPlugin('pdd');
-        $this->response = $pdd->removeFile($file_id, $type);
+        $this->response = $pdd->removeFile($file['id'], $type);
 	}
 }

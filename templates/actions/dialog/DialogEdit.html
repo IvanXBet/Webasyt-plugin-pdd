@@ -1,0 +1,91 @@
+{if isset($file['id'])}
+<div class="pdd-popup-cpt">
+	<i class="icon16 close b-close"></i>
+	<h3 class="title">Изменение набора: {$file['name']|escape}</h3>
+</div>
+
+<div class="pdd-popup-cnt">
+    <div class="pdd-edit-block" data-block="rename">
+        <form class="pdd-files-edit-form" data-fileId='{$file["id"]|escape}' action="?plugin=pdd&module=backend&action=Edit">
+            <input type="hidden" name="file[id]" value="{$file['id']|escape}" />
+            <input type="hidden" name="type" value="{$type|escape}"/>
+            <div class="field">
+                <div class="name">Новое имя</div>
+                <div class="value">
+                    <input type="text" name="file[name]" value="{$file['name']|escape}"/>
+                </div>
+            </div>
+    
+            <div>
+                <input type="submit" class="button green" value="Изменить">
+                <span class="form-message mt15" style="display: block;"></span>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+
+{else}
+<div class="pdd-popup-cpt">
+    <i class="icon16 close b-close"></i>
+    <h2 class="title">Ошибка сервера</h2>
+</div>
+{/if}
+{literal}
+<script type="text/javascript">
+(function ($) {
+	$.tilesfoSetEditDialog = {
+        form: null,
+        file_id: null,
+        
+		init: function() {
+            this.form = $('.pdd-files-edit-form');
+            this.file_id = this.form.attr('data-fileId');
+            
+            this.initForm();
+		},
+        
+		initForm: function() {
+			var self = this;
+
+			this.form.submit(function() {
+				var t = $(this);
+				var m = t.find('.form-message');
+                var filename = $("input[name='file[name]']").prop('value');
+
+				m.hide();
+				
+                if(!$.pddProduct.isValidFilename(filename))
+                {
+					m.css('color', 'red');
+                    m.text("Название файла не должно содержать специальных символов: (\ / : * ? \" < > . |)").show();
+                    return false;
+                }
+
+				$.post(t.attr('action'), t.serialize(), function(jData) {
+					if(jData.data[0].result == 1)
+                    {
+                        $.pddProduct.pricesTable.fnReloadAjax();
+                        $.pddProduct.catalogsTable.fnReloadAjax();
+                        $.pddProduct.initPhotoContainer()
+						$.pddProduct.hidePopup();
+                    }
+					else 
+                    {
+						m.css('color', 'red');
+                        m.text(jData.data[0].message).show();
+                    }
+
+				}, 'json');
+
+				return false;
+			});
+		},
+	}
+})(jQuery);
+$(document).ready(function() {
+    $.tilesfoSetEditDialog.init();
+});
+</script>
+{/literal}

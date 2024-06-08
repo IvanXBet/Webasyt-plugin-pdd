@@ -1,0 +1,14 @@
+<div class="pdd-popup" style="display: none">
+
+</div>
+{literal}
+<script>
+    (function($) {
+        $.pddHelper = {
+            isValidFilename: function(filename) {
+                return /^[^/?*.:;{}\\]+$/.test(filename);
+            }   
+        }
+    })(jQuery);
+</script>
+{/literal}

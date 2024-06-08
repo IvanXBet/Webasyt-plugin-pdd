@@ -3,9 +3,11 @@ class shopPddPluginBackendEditController extends waJsonController
 {
 	public function execute()
 	{
-		$file_id = waRequest::post('file_id', null, 'int');
-		$new_name = waRequest::post('new_name', '', 'string');
+		$file = waRequest::post('file', null, );
         $type = waRequest::post('type', '', 'string');
+
+		$file_id = $file['id'];
+		$new_name = $file['name'];
 
 
 		if (!$file_id) {

@@ -1,5 +1,5 @@
 <?php
-class shopPddPluginProductControlAction extends waViewAction
+class shopPddPluginProductControlPddAction extends waViewAction
 {
 	public function execute()
 	{

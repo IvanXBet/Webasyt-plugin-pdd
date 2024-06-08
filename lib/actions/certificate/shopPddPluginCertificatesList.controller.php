@@ -8,6 +8,7 @@ class shopPddPluginCertificatesListController extends waJsonController
 
 		$collection = new shopPddPluginCertificatesCollection();
 		$collection->addWhere('T.product_id = '.$hash);
+		$collection->setOrderBy("T.sort ASC");
 		$files = $collection->getItems('T.*');
 		
 		
