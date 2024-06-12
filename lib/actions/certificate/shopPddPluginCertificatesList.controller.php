@@ -20,7 +20,8 @@ class shopPddPluginCertificatesListController extends waJsonController
 			
 			$tmp = array(
 				'id' => intval($file['id']),
-				'name' => htmlspecialchars($file['name'].'.'.$file['ext'], ENT_QUOTES),
+				'name' => htmlspecialchars($file['name'], ENT_QUOTES),
+				'text' => htmlspecialchars($file['text'], ENT_QUOTES),
 				'download_url' => '?plugin=pdd&module=backend&action=download&file_id='.intval($file['id']).'&type=certificates',
 				'thumb_url' => $thumb_url,
 			);

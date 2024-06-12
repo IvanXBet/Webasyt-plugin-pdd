@@ -9,13 +9,100 @@
 <script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/jquery.dataTables.reload.plugin.js"></script>
 <script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/select2.js"></script>
 <script type="text/javascript" src="{$wa_app_static_url}plugins/pdd/js/select2_locale_ru.js"></script>
+<style>
+    .photo-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .pdd-certificate-item {
+        width: 200px; 
+        margin-bottom: 20px;
+        border: 1px solid #ddd; 
+        border-radius: 5px;
+        overflow: hidden; 
+        background-color: #fff;
+    }
+    .pdd-certificate-photo {
+        width: 100%;
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+        border-top-left-radius: 5px; 
+        border-top-right-radius: 5px;
+    }
+
+    .pdd-certificate-name {
+        width: calc(100% - 24px); 
+        margin: 10px; 
+        border-radius: 0;
+        margin-bottom: 5px;
+        border: 1px solid;
+        resize: none;
+    }
+
+    .pdd-certificate-text {
+        width: calc(100% - 24px); 
+        margin: 10px; 
+        border-radius: 0;
+        margin-bottom: 5px;
+        resize: none;
+    }
+
+    .pdd-certificate-bnts {
+        margin: 0px 10px 0px 10px;
+        width: calc(100% - 15px);
+        height: 30px;
+        align-items: end;
+        flex-direction: column;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    .pdd-certificate-delete {
+        cursor: pointer;
+    }
+
+    .pdd-certificate-update {
+        position: relative;
+        right: -45px;
+        background-color: green;
+        color: white;
+        font-size: 12px;
+        border: none;
+        border-radius: 0;
+        padding: 6px;
+        width: 90px;
+    }
+    .pdd-certificate {
+        position: relative;
+        right: -45px;
+        font-size: 12px;
+        padding: 6px;
+        width: 90px;
+    }
+    .file-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .showcase-name {
+        font-weight: bold;
+    }
+    .file-name {
+        margin-top: 7px;
+    }
+    
+    td.actions {
+        white-space: nowrap;
+    }
+</style>
 <div class="sidebar pdd-sidebar" style="width: 200px;">
     <div>
 		<h5 class="heading">Категории</h5>
 		<ul class="pdd-menu menu-v with-icons">
-            <li class="selected" data-block="catalogs"><a>Каталоги</a></li>
-            <li data-block="prices"><a>Прайс-листы</a></li>
-            <li data-block="certificates"><a>Сертификаты</a></li>
+            <li class="selected" data-block="catalogs"><a> <i class="icon16 folder"></i>Каталоги</a></li>
+            <li data-block="prices"><a><i class="icon16 dollar"></i>Прайс-листы</a></li>
+            <li data-block="certificates"><a><i class="icon16 edit"></i>Сертификаты</a></li>
 		</ul>
 	</div>
 </div>
@@ -23,7 +110,6 @@
     <div class="pdd-set-blocks mt15 double-padded">
 
         <div class="pdd-set-block" data-block="catalogs">
-
             <form class="pdd_file_upload_form" action="?plugin=pdd&module=file&action=upload" method="POST" enctype="multipart/form-data">
                 <div class="l-dropbox">
                     <a class="l-fileinput-button">
@@ -212,7 +298,6 @@
 
                 this.initPhotoContainer();
                 this.initDeleteBtn();
-                this.initEditBtn();
             },
 
 			initForm: function() {
@@ -263,13 +348,6 @@
                 });
             },
 
-            initEditBtn: function() {
-                var self = this;
-                $(document).on('click', '.pdd-certificate-edit', function() {
-                    self.deployPopup('?plugin=pdd&module=dialog&action=edit', {file_id: $(this).attr('data-id'), type:'certificates'});
-                });
-            },
-
             initCatalogsTable: function() {
                 
 				var self = this;
@@ -278,8 +356,8 @@
                     "processing": true,
                     "serverSide": true,
                     "ajax": self.catalogsTableUrl+'&hash='+encodeURIComponent(self.product_id),
-                    "order": [[ 1, "asc" ]],
-                    columnDefs: [{orderable: false}, {targets: [0]}],
+                    "order": [],
+                    columnDefs: [{orderable: false, targets: '_all'}],
                     "language":{
                         "sLengthMenu": "Показывать _MENU_ записей",
                         "sZeroRecords": "Нет записей, удовлетворяющих условиям поиска",
@@ -320,8 +398,9 @@
                     "processing": true,
                     "serverSide": true,
                     "ajax": self.pricesTableUrl+'&hash='+encodeURIComponent(self.product_id),
-                    "order": [[ 1, "asc" ]],
-                    columnDefs: [{orderable: false}, {targets: [0]}],
+                    "order": [],
+
+                    columnDefs: [{orderable: false, targets: '_all'}],
                     "language":{
                         "sLengthMenu": "Показывать _MENU_ записей",
                         "sZeroRecords": "Нет записей, удовлетворяющих условиям поиска",
@@ -336,6 +415,7 @@
                     "info": false,
                     "searching": false,
                     "lengthChange": false,
+                    
                 });
 
                 this.pricesTable.on('draw.dt', function () {
@@ -361,20 +441,48 @@
                 $.post('?plugin=pdd&module=Certificates&action=List'+'&hash='+encodeURIComponent(self.product_id), function(jData) {
                     jData.data.forEach(function(file) {
                         var photoItem = $(`
-                            <div id="${file.id}">
-                                <div>${file.name}</div>
-                                <div class="mt15">
-                                    <div class="photo-item" style="background-image: url(${file.thumb_url});"></div>
-                                    <i class="icon16 edit pdd-certificate-edit" title="Редактировать" data-id="${file.id}" data-name="${file.name.replace(/\.[^/.]+$/, "")}"></i>
-                                    <i class="icon16 delete pdd-certificate-delete" title="Удалить" data-id="${file.id}" data-name="${file.name.replace(/\.[^/.]+$/, "")}"></i>
-                                    <a href="${file.download_url}">
-                                        <i class="icon16 download pdd-file-download" title="Скачать" data-id="${file.id}"></i>
-                                    </a>
+                                <div class="pdd-certificate-item" id="${file.id}">
+                                    <div class="pdd-certificate-photo" style="background-image: url(${file.thumb_url});"></div>
+                                    <input type="text" class="pdd-certificate-name" value="${file.name}" placeholder="Введите имя">
+                                    <textarea class="pdd-certificate-text" placeholder="Введите текст">${file.text || ""}</textarea>
+                                    <div class="pdd-certificate-bnts">
+                                        <i class="icon16 delete pdd-certificate-delete" title="Удалить" data-id="${file.id}" data-name="${file.name}"></i>
+                                        <a href="${file.download_url}">
+                                            <i class="icon16 download pdd-certificate-download" title="Скачать" data-id="${file.id}"></i>
+                                        </a>
+                                        <button class="pdd-certificate-update" style="display: none;" data-name="${file.name}" data-id="${file.id}">Сохранить</button>
+                                    </div>
                                 </div>
-                            </div>
                         `);
 
                         photoContainer.append(photoItem);
+
+                        
+                        photoItem.find('.pdd-certificate-name').on('input', function() {
+                            photoItem.find('.pdd-certificate-update').show();
+                        });
+
+                       
+                        photoItem.find('.pdd-certificate-text').on('input', function() {
+                            photoItem.find('.pdd-certificate-update').show();
+                        });
+
+                        
+                        photoItem.find('.pdd-certificate-update').on('click', function() {
+                            var data = {
+                                file_id: $(this).data('id'),
+                                new_name: photoItem.find('.pdd-certificate-name').val(),
+                                new_text: photoItem.find('.pdd-certificate-text').val(),
+                            }
+
+                            $.post('?plugin=pdd&module=certificate&action=update', data, function(jData) {
+                                if(jData.data[0].result == '1'){
+                                    photoItem.find('.pdd-certificate-update').hide();
+                                } else {
+                                    console.error('Ошибка сохранения:', jData.data[0].message);
+                                }
+                            });
+                        });
                     });
                 });
 

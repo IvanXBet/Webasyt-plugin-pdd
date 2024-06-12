@@ -15,12 +15,15 @@ class shopPddPluginFileListPricesController extends shopPddPluginBackendDatatabl
 		foreach($files as $file) 
 		{
 			$tmp = array(
-				htmlspecialchars($file['name'].'.'.$file['ext'], ENT_QUOTES),
-				'<a href="?plugin=pdd&module=backend&action=download&file_id='.intval($file['id']).'&type=prices">
-					<i class="icon16 download pdd-prices-download" title="Скачать" data-id="'.intval($file['id']).'"></i>
+				'<div class="file-info">' .
+					'<span class="showcase-name">' . htmlspecialchars($file['showcase'], ENT_QUOTES) . '</span>' .
+					'<span class="file-name hint">' . htmlspecialchars($file['name'] . '.' . $file['ext'], ENT_QUOTES) . '</span>' .
+				'</div>',
+				'<a href="?plugin=pdd&module=backend&action=download&file_id=' . intval($file['id']) . '&type=prices">
+					<i class="icon16 download pdd-prices-download" title="Скачать" data-id="' . intval($file['id']) . '"></i>
 				</a>',
-				'<i class="icon16 edit pdd-prices-edit" title="Редактировать" data-id="'.intval($file['id']).'" data-name="'.$file['name'].'"></i>',
-				'<i class="icon16 delete pdd-prices-delete" title="Удалить" data-id="'.intval($file['id']).'" data-name="'.$file['name'].'"></i>',
+				'<i class="icon16 edit pdd-prices-edit" title="Редактировать" data-id="' . intval($file['id']) . '" data-name="' . htmlspecialchars($file['name'], ENT_QUOTES) . '"></i>',
+				'<i class="icon16 delete pdd-prices-delete" title="Удалить" data-id="' . intval($file['id']) . '" data-name="' . htmlspecialchars($file['name'], ENT_QUOTES) . '"></i>'
 			);
 			array_push($items,  $tmp);
 		}

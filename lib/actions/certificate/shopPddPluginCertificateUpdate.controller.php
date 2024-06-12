@@ -1,11 +1,12 @@
 <?php
-class shopPddPluginBackendEditController extends waJsonController
+class shopPddPluginCertificateUpdateController extends waJsonController
 {
 	public function execute()
 	{
 		$file_id = waRequest::post('file_id', null, 'int');
-		$showcase = waRequest::post('showcase', '', 'string');
-        $type = waRequest::post('type', '', 'string');
+		$new_name = waRequest::post('new_name', '', 'string');
+        $new_text = waRequest::post('new_text', '', 'string');
+
 
 
 		if (!$file_id) {
@@ -15,7 +16,7 @@ class shopPddPluginBackendEditController extends waJsonController
 
 		
 		$pdd = waSystem::getInstance('shop')->getPlugin('pdd');
-        $this->response = $pdd->updateFile($file_id, $showcase, $type);
+        $this->response = $pdd->updateCertificates($file_id, $new_name, $new_text);
 		
 	}
 }

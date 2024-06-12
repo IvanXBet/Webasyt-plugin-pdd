@@ -1,18 +1,16 @@
 {if isset($file['id'])}
 <div class="pdd-popup-cpt">
 	<i class="icon16 close b-close"></i>
-	<h3 class="title">Изменение набора: {$file['name']|escape}</h3>
+	<h3 class="title">Витринное имя файла: {$file['name']|escape}</h3>
 </div>
 
 <div class="pdd-popup-cnt">
     <div class="pdd-edit-block" data-block="rename">
-        <form class="pdd-files-edit-form" data-fileId='{$file["id"]|escape}' action="?plugin=pdd&module=backend&action=Edit">
-            <input type="hidden" name="file[id]" value="{$file['id']|escape}" />
-            <input type="hidden" name="type" value="{$type|escape}"/>
+        <form class="pdd-files-edit-form" data-fileId='{$file["id"]|escape}' data-type="{$type|escape}" action="?plugin=pdd&module=backend&action=Edit">
             <div class="field">
-                <div class="name">Новое имя</div>
+                <div class="name">Введите витринное имя</div>
                 <div class="value">
-                    <input type="text" name="file[name]" value="{$file['name']|escape}"/>
+                    <input type="text" name="file[showcase]" />
                 </div>
             </div>
     
@@ -38,9 +36,11 @@
 	$.tilesfoSetEditDialog = {
         form: null,
         file_id: null,
+        type: null,
         
 		init: function() {
             this.form = $('.pdd-files-edit-form');
+            this.type = this.form.attr('data-type');
             this.file_id = this.form.attr('data-fileId');
             
             this.initForm();
@@ -52,7 +52,7 @@
 			this.form.submit(function() {
 				var t = $(this);
 				var m = t.find('.form-message');
-                var filename = $("input[name='file[name]']").prop('value');
+                var filename = $("input[name='file[showcase]']").prop('value');
 
 				m.hide();
 				
@@ -63,7 +63,7 @@
                     return false;
                 }
 
-				$.post(t.attr('action'), t.serialize(), function(jData) {
+				$.post(t.attr('action'), {file_id: self.file_id, showcase: filename, type: self.type}, function(jData) {
 					if(jData.data[0].result == 1)
                     {
                         $.pddProduct.pricesTable.fnReloadAjax();

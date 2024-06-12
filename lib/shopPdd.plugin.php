@@ -179,8 +179,6 @@ class shopPddPlugin  extends shopPlugin
 						$hash = md5(file_get_contents($tmp_path.$uuid.'.'.$file->extension));
 						waFiles::delete($tmp_path.$uuid.'.'.$file->extension);
 
-						
-
 						if($file_model->getByField(array('hash' => $hash, 'product_id' => $product_id))) 
 						{
 							$file = $file_model->getByField(array('hash' => $hash, 'product_id' => $product_id));
@@ -208,18 +206,19 @@ class shopPddPlugin  extends shopPlugin
 						$path_info = pathinfo($thumb_path);
 						$dirname = $path_info['dirname'];
 						waFiles::create($dirname);
+						
 						$file->moveTo($dirname, $id.'.'.$file->extension);
 						$size = '0x400'; 
 						$max_size = '2000';
 						$thumb_url = shopPddPluginHelper::getThumbUrl($product_id, $id, $size, $file->extension);
 
 						$result[] = array(
-                        'result' => 1,
-                        'message' => 'Файл загружен',
-                        'file' => $file_model->getById($id),
-                        'thumb_url' => $thumb_url,
-						'thumb_path' => $thumb_path,
-                    );
+							'result' => 1,
+							'message' => 'Файл загружен',
+							'file' => $file_model->getById($id),
+							'thumb_url' => $thumb_url,
+							'thumb_path' => $thumb_path,
+                    	);
 						
 					}
 				}
@@ -237,7 +236,7 @@ class shopPddPlugin  extends shopPlugin
         return $result;
 	}
 
-	public function updateFile($file_id, $new_name, $type) 
+	public function updateFile($file_id, $showcase, $type) 
 	{
 		$result = array();
 		switch($type) 
@@ -256,12 +255,34 @@ class shopPddPlugin  extends shopPlugin
 		}
 		
 		$id = $model->escape($file_id);
-		$name = $model->escape($new_name);
+		$showcase = $model->escape($showcase);
 		
 		if(is_numeric($id)) 
 		{
-			$model->updateById($id ,array('name' => $name));
-			$result[] = array('result' => 1, 'message' => 'Имя изменяно', 'file' =>  $model->getById($id));
+			$model->updateById($id ,array('showcase' => $showcase));
+			$result[] = array('result' => 1, 'message' => 'Имя для витрины сохранено', 'file' =>  $model->getById($id));
+		}
+		else
+		{
+			$result[] = array('result' => 0, 'message' => 'Ошибка записи');
+		}
+		return $result;
+	}
+
+	public function updateCertificates($file_id, $new_name, $new_text) 
+	{
+		$result = array();
+		
+		$model = new shopPddPluginCertificatesModel();
+		
+		$id = $model->escape($file_id);
+		$new_name = $model->escape($new_name);
+		$new_text = $model->escape($new_text);
+		
+		if(is_numeric($id)) 
+		{
+			$model->updateById($id ,array('name' => $new_name, 'text' => $new_text));
+			$result[] = array('result' => 1, 'message' => 'Изменения сертификата сохранены', 'file' =>  $model->getById($id));
 		}
 		else
 		{

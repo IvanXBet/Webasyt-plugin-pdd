@@ -8,16 +8,15 @@
         <input type="hidden" name="file[name]" value="{$file['name']|escape}" />
         <input type="hidden" name="file[id]" value="{$file['id']|escape}"/>
         <input type="hidden" name="type" value="{$type|escape}"/>
-        <span class="hint">При удалении набора, все плитки которые в нем находятся тоже будут удаленны</span>
-        <div class="name mt15">Введите его название для его удаления.</div>
+        <div class="hint">Введите его название для удаления.</div>
         
-        <div class="value mt15">
+        <div class="value" style="margin-top: 10px;">
             <input type="text" name="nameInput" value=""/>
         </div>
        
-        <div>
-            <input type="submit" class="button red mt15" value="Удалить">
-            <span class="form-message mt15" style="display: block;"></span>
+        <div style="display: flex; align-items: center; margin-top: 10px;">
+            <input type="submit" class="button red" value="Удалить">
+            <span class="form-message" style="display: block; margin-left: 15px;"></span>
         </div>
     </form>
 </div>
@@ -46,6 +45,7 @@
 				var m = t.find('.form-message');
                 var filename = $("input[name='file[name]']").prop('value');
                 var filenameInput = $("input[name='nameInput']").prop('value');
+
                 
 				m.hide();
 				
