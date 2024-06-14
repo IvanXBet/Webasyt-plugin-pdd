@@ -156,7 +156,7 @@ class shopPddPlugin  extends shopPlugin
 		$tmp_path = wa()->getDataPath('plugins/pdd/tmp/', true);
 		$result = array();
 
-		$valid_extensions = ['jpg', 'jpeg', 'png'];
+		$valid_extensions = ['jpg', 'jpeg', 'png', 'svg'];
         
 		foreach($files as $file) 
 		{
